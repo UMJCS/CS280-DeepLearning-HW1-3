@@ -1,0 +1,190 @@
+\documentclass[12pt]{article}%
+\usepackage{ctex}
+\usepackage{amsfonts}
+\usepackage{fancyhdr}
+\usepackage{comment}
+\usepackage[a4paper, top=2.5cm, bottom=2.5cm, left=2.2cm, right=2.2cm]%
+{geometry}
+\usepackage{times}
+\usepackage{amsmath}
+\usepackage{changepage}
+\usepackage{amssymb}
+\usepackage{graphicx}%
+\usepackage{bm}
+\usepackage{CJK}
+\setcounter{MaxMatrixCols}{30}
+\newtheorem{theorem}{Theorem}
+\newtheorem{acknowledgement}[theorem]{Acknowledgement}
+\newtheorem{algorithm}[theorem]{Algorithm}
+\newtheorem{axiom}{Axiom}
+\newtheorem{case}[theorem]{Case}
+\newtheorem{claim}[theorem]{Claim}
+\newtheorem{conclusion}[theorem]{Conclusion}
+\newtheorem{condition}[theorem]{Condition}
+\newtheorem{conjecture}[theorem]{Conjecture}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{criterion}[theorem]{Criterion}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+\newtheorem{exercise}[theorem]{Exercise}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{notation}[theorem]{Notation}
+\newtheorem{problem}[theorem]{Problem}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{solution}[theorem]{Solution}
+\newtheorem{summary}[theorem]{Summary}
+\usepackage{amssymb}
+
+\newenvironment{proof}[1][Proof]{\textbf{#1.} }{\ \rule{0.5em}{0.5em}}
+
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Z}{\mathbb{Z}}
+
+\begin{document}
+
+\title{CS280 Fall 2018 Assignment 2 \\ Part A}
+\author{CNNs}
+\date{Due in class, Nov 02, 2018}
+\maketitle
+
+\paragraph{Name: MinJie 闵杰 }
+
+\paragraph{Student ID: 10109867}
+
+\newpage
+
+\section*{1. Linear Regression(10 points)}
+\begin{itemize}
+	\item Linear regression has the form $E[y\lvert x] = w_{0} + \bm{w^{T}}x$. It is possible to solve for $\bm{w}$ and $w_{0}$ seperately. Show that
+	\begin{equation*}
+	w_{0} = \frac{1}{n}\sum_{i}y_{i} - \frac{1}{n}\sum_{i}x_{i}^{T}\bm{w} = \overline{y} - \overline{x}^{T}\bm{w} 
+	\end{equation*}
+	
+	
+	\item Show how to cast the problem of linear regression with respect to the absolute value loss function, $l(h,x,y)=\lvert h(x) - y \rvert$, as a linear program.
+\end{itemize}
+\begin{itemize}
+
+\item[I] 1.1 Solution:
+
+%$E[y\lvert x] = w_{0} + \bm{w^{T}}x$ $\Longrightarrow$ %$w_{0} = E[y\lvert x] -\bm{w^{T}}x$ 
+
+%$\because E[y\lvert x] = \frac{1}{len(x)} \sum_{i}y_{i} = %\frac{1}{n}\sum_{i}y_{i}$
+
+%$\because \bm{w^{T}}x = %\frac{1}{n}\sum_{i}x_{i}^{T}\bm{w} $
+
+%$\therefore
+%w_{0} = \frac{1}{n}\sum_{i}y_{i} - %\frac{1}{n}\sum_{i}x_{i}^{T}\bm{w} = \overline{y} - %\overline{x}^{T}\bm{w} $
+
+$loss = \sum_{i=1}^{n} (y_i-w_0-\bm{w^{T}x})$
+
+To get w0, $\frac{\partial loss}{\partial w_0} = 2 (n*w_0-\sum_{i=1}^{n} (y_i-\bm{w^{T}x_i}))$
+
+Let $\frac{\partial loss}{\partial w_0} = 0$, then $ w_0 = \frac{1}{n} \sum_{i=1}^{n} (y_i-x_i^{T}\bm{w} ) = \frac{1}{n}\sum_{i}y_{i} - \frac{1}{n}\sum_{i}x_{i}^{T}\bm{w} = \overline{y} - \overline{x}^{T}\bm{w} \Longrightarrow Proved$
+
+\item[II] 1.2 Solution:
+
+Set new variables $l_1,l_2,...l_n$:
+
+\begin{align}{2}
+
+\min\quad &\frac{1}{n}\sum_{i=1}^{n}l_{i} &{}& \tag{LP1} \label{eqn - lp}\\
+
+\mbox{s.t.}\quad
+
+&h(x_i)-y_i \leq l_i, &\quad\\
+
+&h(x_i)-y_i \geq -l_i, &{}& i  = 1,2,...n 
+
+\end{align}
+
+
+\end{itemize}
+
+\section*{2. Convolution Layers (5 points)}
+We have a video sequence and we would like to design a 3D convolutional neural network to recognize events in the video. The frame size is 32x32 and each video has 30 frames. Let's consider the first convolutional layer.  
+\begin{itemize}
+	\item We use a set of $5\times 5\times 5$ convolutional kernels. Assume we have 64 kernels and apply stride 2 in spatial domain and 4 in temporal domain, what is the size of output feature map? Use proper padding if needed and clarify your notation.
+	\item We want to keep the resolution of the feature map and decide to use the dilated convolution. Assume we have one kernel only with size $7\times 7\times 5$ and apply a dilated convolution of rate $3$. What is the size of the output feature map? What are the downsampling and upsampling strides if you want to compute the same-sized feature map without using dilation?   
+\end{itemize}
+Note: You need to write down the derivation of your results.
+\begin{itemize}
+
+\item[I] 2.1 Solution:
+pad setting here is to get integer size of next layer
+
+input data shape (video) = 32 x 32 x 32 x 3
+
+kernel batch shape = 5 x 5 x 5 x 3 x 64
+
+Because we know that for temporal domain stride s1 = 2, for domain stride s2 = 4
+
+So according to 3D conv size function:
+
+temp = (framesize-kernelsize+pad)/s2 + 1 = (30-5+3)/4 + 1 = 8
+
+height = width = (inputsize - kernelsize + pad)/s2 + 1 = (32-5+1)/2 + 1 = 15
+
+So the size of feature map is 8 x 15 x 15 x 64
+
+\item[II] 2.2 Solution:
+
+kernel size = 7 x 7 x 5
+
+dilated convolution rate = 3
+
+so after dilated convolution, the size 3 * (originsize-1) + 1 then size = 19 x 19 x 13
+
+so the size of feature map should be the same as 2.1:
+
+temp = (framesize-kernelsize+pad)/stride + 1 = (30-13+12)/1 + 1 = 30
+
+height = width = (inputsize - kernelsize + pad)/stride + 1 = (32-19+18)/1 + 1 = 32
+
+The size of feature map = 30 x 32 x 32 x 3 x 1
+
+Downsampling = Upsampling = dilated rate = 3
+\end{itemize}
+
+
+\section*{3. Batch Normalization (5 points)}
+With Batch Normalization (BN), show that backpropagation through a layer is unaffected by the scale of its parameters. 
+\begin{itemize}
+	\item Show that \[BN(\mathbf{Wu})=BN((a\mathbf{W})\mathbf{u})\] where $\mathbf{u}$ is the input vector and $\mathbf{W}$ is the weight matrix, $a$ is a scalar. 
+	\item (Bonus: 5 pts) Show that 
+	\[\frac{\partial BN((a\mathbf{W})\mathbf{u})}{\partial \mathbf{u}}=\frac{\partial BN(\mathbf{W}\mathbf{u})}{\partial \mathbf{u}}\]
+\end{itemize}
+
+\begin{itemize}
+\item[I] 3.1 Solution:
+
+$BN(\mathbf{Wu}) = \frac{\mathbf{Wu}-E[\mathbf{Wu}]}{\sqrt{Var[\mathbf{Wu}]}} = \frac{a\mathbf{Wu}-aE[\mathbf{Wu}]}{aVar[\sqrt{\mathbf{Wu}]}}
+$ 
+
+$=\frac{\mathbf{(aW)u}-E[\mathbf{(aW)u}]}{Var[\sqrt{\mathbf{(aW)u}]}}$ 
+
+$= BN((a\mathbf{W})\mathbf{u}) $
+
+\item[II] 3.2 Solution (Bonus):
+
+According to equation in 3.1:
+
+$\frac{\partial BN((a\mathbf{W})\mathbf{u})]}{\partial \mathbf{u}}=  \frac{\partial (\frac{a\mathbf{Wu}-aE[\mathbf{Wu}]}{aVar[\sqrt{\mathbf{Wu}]}}) }{\partial \mathbf{u}} $
+
+$= \frac{\partial (\frac{\mathbf{Wu}-E[\mathbf{Wu}]}{Var[\sqrt{\mathbf{Wu}]}}) }{\partial \mathbf{u}}$
+
+$ = \frac{\partial BN(\mathbf{Wu})}{\partial \mathbf{u}}   \Longrightarrow Proved$
+
+
+\end{itemize}
+
+
+
+\newpage
+
+
+
+\end{document}
